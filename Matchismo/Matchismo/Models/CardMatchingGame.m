@@ -87,7 +87,6 @@ static const int COST_TO_CHOOSE = 1;
                 [chosenCards removeObject:card];
                 int score = [card match:[chosenCards copy]];
                 if (score) {
-                    self.currentScore = score;
                     for (Card *otherCard in chosenCards) {
                         otherCard.matched = YES;
                     }
@@ -98,6 +97,7 @@ static const int COST_TO_CHOOSE = 1;
                         score -= MISMATCH_PENALTY * (self.matchMode - 1);
                     }
                 }
+                self.currentScore = score;
                 self.score += score;
             }
             self.score -= COST_TO_CHOOSE;
