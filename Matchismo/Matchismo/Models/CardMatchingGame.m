@@ -96,6 +96,7 @@ static const int COST_TO_CHOOSE = 1;
                         otherCard.chosen = NO;
                         score -= MISMATCH_PENALTY * (self.matchMode - 1);
                     }
+                    card.chosen = NO;
                 }
                 self.currentScore = score;
                 self.score += score;

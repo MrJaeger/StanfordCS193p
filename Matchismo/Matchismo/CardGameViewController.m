@@ -1,4 +1,4 @@
-//
+    //
 //  CardGameViewController.m
 //  Matchismo
 //
@@ -13,7 +13,6 @@
 @interface CardGameViewController ()
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
-@property (weak, nonatomic) IBOutlet UISwitch *matchModeSlider;
 @property (strong, nonatomic) CardMatchingGame *game;
 @property (weak, nonatomic) IBOutlet UILabel *resultsLabel;
 @end
@@ -21,11 +20,7 @@
 @implementation CardGameViewController
 
 - (CardMatchingGame *)createNewGame {
-    int matchMode = 2;
-    if (!self.matchModeSlider.on) {
-        matchMode = 3;
-    }
-    return [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count] usingDeck:[self createDeck] withMatchMode:matchMode];
+    return [[CardMatchingGame alloc] initWithCardCount:[self.cardButtons count] usingDeck:[self createDeck] withMatchMode:2];
 }
 
 - (CardMatchingGame *)game {
@@ -34,34 +29,23 @@
 }
 
 - (Deck *)createDeck {
-    return [[PlayingCardDeck alloc] init];
+    return nil;
 }
 
 - (IBAction)touchNewGameButton:(UIButton *)sender {
     self.game = [self createNewGame];
     self.scoreLabel.text = @"Score: 0";
     self.resultsLabel.text = @"";
-    self.matchModeSlider.enabled = YES;
     [self updateUI];
 }
 
 - (IBAction)touchCardButton:(UIButton *)sender {
-    self.matchModeSlider.enabled = NO;
-    int chosenButtonIndex = [self.cardButtons indexOfObject:sender];
-    [self.game chooseCardAtIndex:chosenButtonIndex];
-    [self updateDescription:chosenButtonIndex];
+    [self.game chooseCardAtIndex:[self.cardButtons indexOfObject:sender]];
+    [self updateDescription];
     [self updateUI];
 }
 
-- (IBAction)toggleMatchCountSwitch:(UISwitch *)sender {
-    if (sender.on) {
-        self.game.matchMode = 2;
-    } else {
-        self.game.matchMode = 3;
-    }
-}
-
-- (void)updateDescription:(int)chosenButtonIndex {
+- (void)updateDescription {
     if ([self.game.currentCards count] == self.game.matchMode) {
         NSMutableArray *matchingCards = [[NSMutableArray alloc] init];
         for (Card *card in self.game.currentCards) {
@@ -101,15 +85,11 @@
         }
         description = [NSString stringWithFormat:@"%@  You got %d points.", description, self.game.currentScore];
         self.resultsLabel.text = description;
-        if ([matchingCards count]) {
-            self.game.currentCards = [[NSMutableArray alloc] init];
-        } else {
-            self.game.currentCards = [[NSMutableArray alloc] initWithArray:@[[self.game cardAtIndex:chosenButtonIndex]]];
-        }
+        self.game.currentCards = [[NSMutableArray alloc] init];
         self.game.currentScore = 0;
     } else {
         NSString *description = @"";
-        for (PlayingCard *card in self.game.currentCards) {
+        for (Card *card in self.game.currentCards) {
             description = [description stringByAppendingString:card.contents];
             description = [description stringByAppendingString:@" "];
         }
