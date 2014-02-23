@@ -10,7 +10,7 @@
 #import "PlayingCardDeck.h"
 
 @interface PlayingCardGameViewController ()
-
+@property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
 @end
 
 @implementation PlayingCardGameViewController

@@ -53,7 +53,7 @@ NSUInteger MAX_RANK = 3;
 
 - (void)setRank:(NSUInteger)rank {
     if (rank >= [SetCard minRank] && rank <= [SetCard maxRank]) {
-        rank = _rank;
+        _rank = rank;
     }
 }
 
