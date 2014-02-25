@@ -13,6 +13,7 @@
 
 @interface SetCardGameViewController ()
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *cardButtons;
+@property (weak, nonatomic) IBOutlet UITextView *resultsText;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @end
 
@@ -30,12 +31,52 @@
     return [[SetCardDeck alloc] init];
 }
 
+- (IBAction)touchNewGameButton:(UIButton *)sender {
+    self.game = [self createNewGame];
+    self.scoreLabel.text = @"Score: 0";
+    self.resultsText.text = @"";
+    [self updateUI];
+}
+
+- (void)updateDescription {
+    if ([self.game.currentCards count] == self.game.matchMode) {
+        NSMutableAttributedString *description = [[NSMutableAttributedString alloc] init];
+        for (SetCard *card in self.game.currentCards) {
+            [description appendAttributedString:[self contentsForCard:card]];
+            [description appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+        }
+        if (self.game.currentScore < 0) {
+            [description appendAttributedString:[[NSAttributedString alloc] initWithString:@"didnt't match."]];
+        } else {
+            [description appendAttributedString:[[NSAttributedString alloc] initWithString:@"matched."]];
+        }
+        [description appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"  You got %d points", self.game.currentScore]]];
+        self.resultsText.attributedText = [description copy];
+        self.game.currentCards = [[NSMutableArray alloc] init];
+        self.game.currentScore = 0;
+    } else {
+        NSMutableAttributedString *description = [[NSMutableAttributedString alloc] initWithString:@""];
+        for (SetCard *card in self.game.currentCards) {
+            [description appendAttributedString:[self contentsForCard:card]];
+            [description appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+        }
+        [description appendAttributedString:[[NSAttributedString alloc] initWithString:@"Chosen"]];
+        self.resultsText.attributedText = description;
+    }
+}
+
 - (void)updateUI {
     for (UIButton *cardButton in self.cardButtons) {
         int cardButtonIndex= [self.cardButtons indexOfObject:cardButton];
         SetCard *card = (SetCard *)[self.game cardAtIndex:cardButtonIndex];
         NSAttributedString *str = [self contentsForCard:card];
         [cardButton setAttributedTitle:str forState:UIControlStateNormal];
+        if (card.isChosen) {
+            cardButton.layer.borderWidth = 2.0f;
+            cardButton.layer.borderColor = [[UIColor redColor] CGColor];
+        } else {
+            cardButton.layer.borderWidth = 0.0f;
+        }
         cardButton.enabled = !card.isMatched;
         self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
     }
